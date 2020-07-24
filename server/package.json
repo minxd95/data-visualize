@@ -1,0 +1,31 @@
+{
+  "name": "data-visualize",
+  "version": "1.0.0",
+  "description": "나이비 음원별 실적 데이터 정리 및 시각화",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --exec babel-node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/minxd95/data-visualize.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/minxd95/data-visualize/issues"
+  },
+  "homepage": "https://github.com/minxd95/data-visualize#readme",
+  "dependencies": {
+    "@babel/core": "^7.10.5",
+    "@babel/node": "^7.10.5",
+    "@babel/preset-env": "^7.10.4",
+    "excel": "^1.0.1",
+    "express": "^4.17.1",
+    "multer": "^1.4.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
