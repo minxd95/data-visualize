@@ -92,7 +92,7 @@ router.get("/merge", (req, res) => {
     const data = new Array(files.length);
     for (let i = 0; i < data.length; i++)
       data[i] = JSON.parse(fs.readFileSync("./data/" + files[i], "utf-8"));
-    res.json(data);
+    res.json(data[0]);
   });
   /*-------------------------------------------------------*/
 });
