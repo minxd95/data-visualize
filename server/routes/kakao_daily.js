@@ -56,17 +56,25 @@ router.post("/upload", upload.single("file"), (req, res) => {
       // 총 몇일 인지 계산하여 배열 메모리 할당
       // 정보이용료,st,dl,저작인접권료가 모두 있다는 가정 하에 4로 나눔
       for (let j = start, k = 0; j < data[0].length; j = j + 4, k++) {
-        resultJson[i - 2].daily[k] = new Object();
-        resultJson[i - 2].daily[k].year =
-          data[0][j - 1].trim().substring(0, 4) * 1;
-        resultJson[i - 2].daily[k].month =
-          data[0][j - 1].trim().substring(4, 6) * 1;
-        resultJson[i - 2].daily[k].day =
-          data[0][j - 1].trim().substring(6, 8) * 1;
-        resultJson[i - 2].daily[k].st = data[i][j] * 1;
-        resultJson[i - 2].daily[k].dl = data[i][j + 1] * 1;
-        resultJson[i - 2].daily[k].royalty =
-          Math.round(data[i][j + 2] * 100) / 100; // 소수점 2자리까지 반올림
+        resultJson[i - 2].daily[k] = {
+          date: `${data[0][j - 1].trim().substring(0, 4)}-${data[0][j - 1]
+            .trim()
+            .substring(4, 6)}-${data[0][j - 1].trim().substring(6, 8)}`,
+          [`st_${data[0][j - 1].trim().substring(0, 4)}-${data[0][j - 1]
+            .trim()
+            .substring(4, 6)}-${data[0][j - 1].trim().substring(6, 8)}`]: data[
+            i
+          ][j],
+          [`dl_${data[0][j - 1].trim().substring(0, 4)}-${data[0][j - 1]
+            .trim()
+            .substring(4, 6)}-${data[0][j - 1].trim().substring(6, 8)}`]: data[
+            i
+          ][j + 1],
+          [`royalty_${data[0][j - 1].trim().substring(0, 4)}-${data[0][j - 1]
+            .trim()
+            .substring(4, 6)}-${data[0][j - 1].trim().substring(6, 8)}`]:
+            Math.round(data[i][j + 2] * 100) / 100,
+        };
       }
       /*--------------------------*/
     }
