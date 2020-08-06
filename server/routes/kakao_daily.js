@@ -46,13 +46,15 @@ router.post("/upload", upload.single("file"), (req, res) => {
       // 0,1 행은 컬럼명이므로 2부터 시작
       resultJson[i - 2] = new Object();
       // string.trim() : 문자열 앞 뒤 공백 삭제 (혹시 모를 경우 대비)
-      resultJson[i - 2].trackName = data[i][trackName].trim();
-      resultJson[i - 2].trackCode = data[i][trackCode].trim();
-      resultJson[i - 2].albumName = data[i][albumName].trim();
-      resultJson[i - 2].albumCode = data[i][albumCode].trim();
-      resultJson[i - 2].artist = data[i][artist].trim();
+      resultJson[i - 2] = {
+        trackName: data[i][trackName].trim(),
+        trackCode: data[i][trackCode].trim(),
+        albumName: data[i][albumName].trim(),
+        albumCode: data[i][albumCode].trim(),
+        artist: data[i][artist].trim(),
+        daily: new Array((data[0].length - start + 1) / 4),
+      };
       /* 일자별 데이터 저장 시작 */
-      resultJson[i - 2].daily = new Array((data[0].length - start + 1) / 4);
       // 총 몇일 인지 계산하여 배열 메모리 할당
       // 정보이용료,st,dl,저작인접권료가 모두 있다는 가정 하에 4로 나눔
       for (let j = start, k = 0; j < data[0].length; j = j + 4, k++) {
@@ -98,9 +100,53 @@ router.get("/merge", (req, res) => {
   /* 파일 목록 불러와서 파일들의 데이터를 data 배열에 저장 */
   fs.readdir("./data", (err, files) => {
     const data = new Array(files.length);
-    for (let i = 0; i < data.length; i++)
+    let trackCodeList = new Array();
+    for (let i = 0; i < data.length; i++) {
       data[i] = JSON.parse(fs.readFileSync("./data/" + files[i], "utf-8"));
-    res.json(data[0]);
+      for (let j = 0; j < data[i].length; j++) {
+        trackCodeList.push(data[i][j].trackCode);
+      }
+    }
+    // 중복 제거
+    trackCodeList = Array.from(new Set(trackCodeList));
+
+    // 합치기
+    let found = {};
+    const result = new Array(trackCodeList.length);
+    const resultTotal = new Array(trackCodeList.length);
+
+    for (let i = 0; i < trackCodeList.length; i++) {
+      result[i] = {};
+      result[i].daily = [];
+    }
+
+    for (let k = 0; k < data.length; k++) {
+      for (let i = 0; i < trackCodeList.length; i++) {
+        found = data[k].find((e) => e.trackCode == trackCodeList[i]);
+        result[i] = {
+          trackName: found.trackName,
+          trackCode: found.trackCode,
+          albumName: found.albumName,
+          albumCode: found.albumCode,
+          artist: found.artist,
+          ...result[i],
+        };
+        result[i].daily.push(...found.daily);
+        let stTotal = 0,
+          dlTotal = 0,
+          royaltyTotal = 0;
+        for (let j = 0; j < result[i].daily.length; j++) {
+          stTotal += result[i].daily[j][`st_${result[i].daily[j].date}`] * 1;
+          dlTotal += result[i].daily[j][`dl_${result[i].daily[j].date}`] * 1;
+          royaltyTotal +=
+            result[i].daily[j][`royalty_${result[i].daily[j].date}`];
+        }
+        result[i].stTotal = stTotal;
+        result[i].dlTotal = dlTotal;
+        result[i].royaltyTotal = Math.round(royaltyTotal * 100) / 100;
+      }
+    }
+    res.json(result);
   });
   /*-------------------------------------------------------*/
 });

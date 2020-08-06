@@ -1,7 +1,6 @@
 import React from "react";
 // import styled, { createGlobalStyle } from "styled-components";
 import { Table, DatePicker } from "antd";
-// import "./DataTable.css";
 import "antd/dist/antd.css";
 
 const { RangePicker } = DatePicker;
@@ -100,7 +99,6 @@ function DataTable({ data }) {
         key: "albumName",
         align: "center",
         width: 200,
-        fixed: "left",
         filters: albumNameFilter,
         onFilter: (value, record) => record.albumName.indexOf(value) === 0,
       },
@@ -164,6 +162,41 @@ function DataTable({ data }) {
         ],
       });
     }
+
+    columns.push({
+      title: "합계",
+      key: "total",
+      align: "center",
+      fixed: "right",
+      children: [
+        {
+          title: "ST",
+          dataIndex: "stTotal",
+          key: "stTotal",
+          align: "center",
+          fixed: "right",
+          width: 80,
+        },
+        {
+          title: "DL",
+          dataIndex: "dlTotal",
+          key: "dlTotal",
+          align: "center",
+          fixed: "right",
+          width: 80,
+        },
+        {
+          title: "저작인접권료",
+          dataIndex: "royaltyTotal",
+          key: "royaltyTotal",
+          align: "center",
+          fixed: "right",
+          width: 120,
+        },
+      ],
+    });
+
+    // 데이터 배열
     for (let i = 0; i < data.length; i++) {
       dataSource[i] = {
         key: i,
@@ -172,6 +205,9 @@ function DataTable({ data }) {
         artist: data[i].artist,
         trackCode: data[i].trackCode,
         albumCode: data[i].albumCode,
+        stTotal: data[i].stTotal,
+        dlTotal: data[i].dlTotal,
+        royaltyTotal: data[i].royaltyTotal,
       };
       for (let j = 0; j < days; j++) {
         dataSource[i] = {
@@ -195,7 +231,7 @@ function DataTable({ data }) {
           size="small"
           /*scroll={{ x: "calc(700px + 50%)", y: 240 }*/
         />
-        <RangePicker />
+        {/* <RangePicker /> */}
       </div>
     );
   }
