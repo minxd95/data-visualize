@@ -1,9 +1,9 @@
 import React from "react";
 // import styled, { createGlobalStyle } from "styled-components";
-import { Table, DatePicker } from "antd";
+import { Table } from "antd";
 import "antd/dist/antd.css";
 
-const { RangePicker } = DatePicker;
+// const { RangePicker } = DatePicker;
 
 function DataTable({ data }) {
   let columns = [];
@@ -31,11 +31,10 @@ function DataTable({ data }) {
     trackName = Array.from(new Set(trackName));
     trackNameFilter = new Array(trackName.length);
     for (let i = 0; i < trackName.length; i++) {
-      trackNameFilter[i] = new Object();
+      trackNameFilter[i] = {};
       trackNameFilter[i].text = trackName[i];
       trackNameFilter[i].value = trackName[i];
     }
-    console.log(trackNameFilter);
 
     for (let i = 0; i < data.length; i++) {
       albumName.push(data[i].albumName);
@@ -43,7 +42,7 @@ function DataTable({ data }) {
     albumName = Array.from(new Set(albumName));
     albumNameFilter = new Array(albumName.length);
     for (let i = 0; i < albumName.length; i++) {
-      albumNameFilter[i] = new Object();
+      albumNameFilter[i] = {};
       albumNameFilter[i].text = albumName[i];
       albumNameFilter[i].value = albumName[i];
     }
@@ -54,7 +53,7 @@ function DataTable({ data }) {
     artist = Array.from(new Set(artist));
     artistFilter = new Array(artist.length);
     for (let i = 0; i < artist.length; i++) {
-      artistFilter[i] = new Object();
+      artistFilter[i] = {};
       artistFilter[i].text = artist[i];
       artistFilter[i].value = artist[i];
     }
@@ -65,7 +64,7 @@ function DataTable({ data }) {
     trackCode = Array.from(new Set(trackCode));
     trackCodeFilter = new Array(trackCode.length);
     for (let i = 0; i < trackCode.length; i++) {
-      trackCodeFilter[i] = new Object();
+      trackCodeFilter[i] = {};
       trackCodeFilter[i].text = trackCode[i];
       trackCodeFilter[i].value = trackCode[i];
     }
@@ -76,7 +75,7 @@ function DataTable({ data }) {
     albumCode = Array.from(new Set(albumCode));
     albumCodeFilter = new Array(albumCode.length);
     for (let i = 0; i < albumCode.length; i++) {
-      albumCodeFilter[i] = new Object();
+      albumCodeFilter[i] = {};
       albumCodeFilter[i].text = albumCode[i];
       albumCodeFilter[i].value = albumCode[i];
     }
@@ -222,17 +221,15 @@ function DataTable({ data }) {
       }
     }
     return (
-      <div>
-        <Table
-          dataSource={dataSource}
-          columns={columns}
-          bordered
-          scroll={{ x: 0 }}
-          size="small"
-          /*scroll={{ x: "calc(700px + 50%)", y: 240 }*/
-        />
-        {/* <RangePicker /> */}
-      </div>
+      <Table
+        pagination={{ pageSize: 7 }}
+        dataSource={dataSource}
+        columns={columns}
+        bordered
+        scroll={{ x: 0 }}
+        size="small"
+        /*scroll={{ x: "calc(700px + 50%)", y: 240 }*/
+      />
     );
   }
 }

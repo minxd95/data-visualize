@@ -95,7 +95,6 @@ router.post("/upload", upload.single("file"), (req, res) => {
     /*--------------*/
   });
 });
-
 router.get("/merge", (req, res) => {
   /* 파일 목록 불러와서 파일들의 데이터를 data 배열에 저장 */
   fs.readdir("./data", (err, files) => {
@@ -120,6 +119,7 @@ router.get("/merge", (req, res) => {
       result[i].daily = [];
     }
 
+    // 중복되지 않는 리스트를 만들어 데이터 재가공
     for (let k = 0; k < data.length; k++) {
       for (let i = 0; i < trackCodeList.length; i++) {
         found = data[k].find((e) => e.trackCode == trackCodeList[i]);
@@ -132,6 +132,8 @@ router.get("/merge", (req, res) => {
           ...result[i],
         };
         result[i].daily.push(...found.daily);
+
+        // 합 계산
         let stTotal = 0,
           dlTotal = 0,
           royaltyTotal = 0;
@@ -150,5 +152,9 @@ router.get("/merge", (req, res) => {
   });
   /*-------------------------------------------------------*/
 });
-
+router.get("/getlist", (req, res) => {
+  fs.readdir("./data", (err, files) => {
+    res.json(files);
+  });
+});
 export default router;
