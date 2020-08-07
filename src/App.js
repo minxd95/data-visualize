@@ -25,11 +25,9 @@ function App() {
     setDataList(response.data);
   }
 
-  const handleDelete = (key) => {
-    let tempList = dataList;
-    tempList.splice(key, 1);
-    console.log(tempList);
-    setDataList(tempList);
+  const handleDelete = (key, index) => {
+    // 얕은 복사와 깊은 복사에 대해 공부하자
+    setDataList(dataList.filter((d, inIndex) => inIndex !== index));
   };
 
   useEffect(() => {

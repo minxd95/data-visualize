@@ -16,7 +16,6 @@ const DataList = (props) => {
         key: i,
       });
     }
-    console.log(1);
     setFileList(tempList);
   }, [data]);
 
@@ -26,13 +25,13 @@ const DataList = (props) => {
       header={<div>파일 목록</div>}
       bordered
       dataSource={fileList}
-      renderItem={(item) => (
+      renderItem={(item, index) => (
         <List.Item
           key={item.key}
           actions={[
             <p
               onClick={() => {
-                onDelete(item.key);
+                onDelete(item.key, index);
                 //console.log(item.key);
               }}
             >
