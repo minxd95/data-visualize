@@ -25,6 +25,7 @@ const DataList = (props) => {
       header={<div>파일 목록</div>}
       bordered
       dataSource={fileList}
+      pagination={{ pageSize: 3 }}
       renderItem={(item, index) => (
         <List.Item
           key={item.key}

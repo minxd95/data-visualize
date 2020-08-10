@@ -222,7 +222,7 @@ function DataTable({ data }) {
     }
     return (
       <Table
-        pagination={{ pageSize: 7 }}
+        pagination={{ pageSize: 10 }}
         dataSource={dataSource}
         columns={columns}
         bordered

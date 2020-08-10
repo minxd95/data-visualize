@@ -1,9 +1,12 @@
-import express from "express";
+import express, { urlencoded } from "express";
 import fs from "fs";
 import parseXlsx from "excel";
 import multer from "multer";
 
 const router = express.Router();
+
+router.use(express.json());
+router.use(express.urlencoded({ extended: false }));
 
 /* 업로드 모듈 설정 부분 */
 const storage = multer.diskStorage({
@@ -155,6 +158,18 @@ router.get("/merge", (req, res) => {
 router.get("/getlist", (req, res) => {
   fs.readdir("./data", (err, files) => {
     res.json(files);
+  });
+});
+router.post("/delete", (req, res) => {
+  fs.unlink("./data/" + req.body.file, (err) => {
+    if (err) return res.status(500).json(err);
+    fs.unlink(
+      "./uploads/" + req.body.file.replace(/.json/gi, ".xlsx"),
+      (err) => {
+        if (err) return res.status(500).json(err);
+        return res.status(200).json(err);
+      }
+    );
   });
 });
 export default router;
