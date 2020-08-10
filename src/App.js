@@ -4,9 +4,11 @@ import DataList from "./components/DataList";
 import UploadFile from "./components/UploadFile";
 import axios from "axios";
 import LoadingOverlay from "react-loading-overlay";
-import { Row, Col } from "antd";
+import { Row, Col, DatePicker } from "antd";
 import styled, { css } from "styled-components";
 import "./style.css";
+
+const { RangePicker } = DatePicker;
 
 const DarkBackground = styled.div`
   display: none; /* Hidden by default */
@@ -47,7 +49,13 @@ function App() {
     if (!response) return;
     setDataList(response.data);
   }
-
+  const handleReset = async () => {
+    await axios.post("http://localhost:3000/kakao/daily/reset", {
+      dataList: dataList,
+    });
+    await fetchDataList();
+    await fetchData();
+  };
   const handleDelete = async (key, index) => {
     // 얕은 복사와 깊은 복사에 대해 공부하자
     await axios.post("http://localhost:3000/kakao/daily/delete", {
@@ -82,11 +90,19 @@ function App() {
         </Row>
         <Row gutter={[0, 6]}>
           <Col span={4} offset={1}>
-            <DataList key="datalist" data={dataList} onDelete={handleDelete} />
+            <DataList
+              key="datalist"
+              data={dataList}
+              onDelete={handleDelete}
+              onReset={handleReset}
+            />
           </Col>
           <Col offset={1}>
             <UploadFile onUploaded={handleUploaded} />
           </Col>
+          {/*<Col offset={1}>
+            <RangePicker></RangePicker>
+  </Col>*/}
         </Row>
       </LoadingOverlay>
     </div>

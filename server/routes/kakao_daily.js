@@ -23,15 +23,16 @@ const upload = multer({ storage: storage });
 router.use(express.urlencoded({ extended: false }));
 router.use(express.json());
 
-router.post("/upload", upload.single("file"), (req, res) => {
+router.post("/upload", upload.array("file"), async (req, res) => {
   // 컬럼별 인덱스 저장 변수 선언
-  let trackName = 0,
-    trackCode = 0,
-    albumName = 0,
-    albumCode = 0,
-    artist = 0,
-    start = 0;
-  parseXlsx("./uploads/" + req.file.originalname).then((data) => {
+  for (let o = 0; o < req.files.length; o++) {
+    let trackName = 0,
+      trackCode = 0,
+      albumName = 0,
+      albumCode = 0,
+      artist = 0,
+      start = 0;
+    const data = await parseXlsx("./uploads/" + req.files[o].originalname);
     const resultJson = new Array(data.length - 2);
     /* 컬럼별 인덱스 저장 */
     for (let i = 0; i < data[0].length; i++) {
@@ -84,19 +85,17 @@ router.post("/upload", upload.single("file"), (req, res) => {
       /*--------------------------*/
     }
     /* JSON으로 저장 */
-    fs.writeFile(
-      "./data/" + req.file.originalname.split(".")[0] + ".json",
-      JSON.stringify(resultJson),
-      function (err) {
-        if (err) return res.json(err);
-        res.json({
-          message: "success",
-          data: resultJson,
-        });
-      }
-    );
+    try {
+      fs.writeFileSync(
+        "./data/" + req.files[o].originalname.split(".")[0] + ".json",
+        JSON.stringify(resultJson)
+      );
+      res.json({ message: "success", data: resultJson });
+    } catch (err) {
+      res.status(500).json(err);
+    }
     /*--------------*/
-  });
+  }
 });
 router.get("/merge", (req, res) => {
   /* 파일 목록 불러와서 파일들의 데이터를 data 배열에 저장 */
@@ -171,5 +170,22 @@ router.post("/delete", (req, res) => {
       }
     );
   });
+});
+router.post("/reset", (req, res) => {
+  for (let i = 0; i < req.body.dataList.length; i++) {
+    try {
+      fs.unlinkSync(
+        __dirname.replace("\\routes", "") + "\\data\\" + req.body.dataList[i]
+      );
+      fs.unlinkSync(
+        __dirname.replace("\\routes", "") +
+          "\\uploads\\" +
+          req.body.dataList[i].replace(/.json/gi, ".xlsx")
+      );
+    } catch (err) {
+      return res.json(err);
+    }
+  }
+  res.json({ message: "success" });
 });
 export default router;

@@ -143,6 +143,10 @@ function DataTable({ data }) {
             key: `st_${data[0].daily[i].date}`,
             align: "center",
             width: 80,
+            sortDirections: ["descend", "ascend"],
+            sorter: (a, b) =>
+              a[`st_${data[0].daily[i].date}`] -
+              b[`st_${data[0].daily[i].date}`],
           },
           {
             title: "DL",
@@ -150,6 +154,10 @@ function DataTable({ data }) {
             key: `dl_${data[0].daily[i].date}`,
             align: "center",
             width: 80,
+            sortDirections: ["descend", "ascend"],
+            sorter: (a, b) =>
+              a[`dl_${data[0].daily[i].date}`] -
+              b[`dl_${data[0].daily[i].date}`],
           },
           {
             title: `저작인접권료`,
@@ -157,6 +165,10 @@ function DataTable({ data }) {
             key: `royalty_${data[0].daily[i].date}`,
             align: "center",
             width: 120,
+            sortDirections: ["descend", "ascend"],
+            sorter: (a, b) =>
+              a[`royalty_${data[0].daily[i].date}`] -
+              b[`royalty_${data[0].daily[i].date}`],
           },
         ],
       });
@@ -175,6 +187,8 @@ function DataTable({ data }) {
           align: "center",
           fixed: "right",
           width: 80,
+          sortDirections: ["descend", "ascend"],
+          sorter: (a, b) => a.stTotal - b.stTotal,
         },
         {
           title: "DL",
@@ -183,6 +197,8 @@ function DataTable({ data }) {
           align: "center",
           fixed: "right",
           width: 80,
+          sortDirections: ["descend", "ascend"],
+          sorter: (a, b) => a.dlTotal - b.dlTotal,
         },
         {
           title: "저작인접권료",
@@ -191,6 +207,8 @@ function DataTable({ data }) {
           align: "center",
           fixed: "right",
           width: 120,
+          sortDirections: ["descend", "ascend"],
+          sorter: (a, b) => a.royaltyTotal - b.royaltyTotal,
         },
       ],
     });

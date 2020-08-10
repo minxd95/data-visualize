@@ -1,10 +1,13 @@
 import React from "react";
-import { Upload, message, Button } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { Upload, message } from "antd";
+import { InboxOutlined } from "@ant-design/icons";
+
+const { Dragger } = Upload;
 
 function UploadFile({ onUploaded }) {
   const props = {
     name: "file",
+    multiple: true,
     action: "http://localhost:3000/kakao/daily/upload",
     showUploadList: false,
     headers: {
@@ -23,12 +26,16 @@ function UploadFile({ onUploaded }) {
     },
   };
   return (
-    <Upload {...props}>
-      <Button>
-        <UploadOutlined />
-        Click to upload
-      </Button>
-    </Upload>
+    <Dragger {...props}>
+      <p className="ant-upload-drag-icon">
+        <InboxOutlined />
+      </p>
+      <p className="ant-upload-text">클릭하거나 드래그하여 업로드</p>
+      {/*<p className="ant-upload-hint">
+        Support for a single or bulk upload. Strictly prohibit from uploading
+        company data or other band files
+  </p>*/}
+    </Dragger>
   );
 }
 
