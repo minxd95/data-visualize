@@ -8,7 +8,8 @@ function UploadFile({ onUploaded }) {
   const props = {
     name: "file",
     multiple: true,
-    action: "http://localhost:3000/kakao/daily/upload",
+    action:
+      "http://ec2-13-209-89-146.ap-northeast-2.compute.amazonaws.com:3000/kakao/daily/upload",
     showUploadList: false,
     headers: {
       authorization: "authorization-text",
