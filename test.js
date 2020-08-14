@@ -1,7 +1,5 @@
-const test = {
-  a: 1,
-  b: 2,
-  c: this,
-};
+const a = new Date("2000-01-01");
+const b = new Date("2000-01-31");
 
-console.log(test.c);
+if (a > b) console.log("a>b");
+else console.log("a<=b");

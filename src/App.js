@@ -2,13 +2,12 @@ import React, { useState, useEffect } from "react";
 import DataTable from "./components/DataTable";
 import DataList from "./components/DataList";
 import UploadFile from "./components/UploadFile";
+import DatePicker from "./components/DatePicker";
 import axios from "axios";
 import LoadingOverlay from "react-loading-overlay";
-import { Row, Col, DatePicker } from "antd";
+import { Row, Col } from "antd";
 import styled, { css } from "styled-components";
 import "./style.css";
-
-const { RangePicker } = DatePicker;
 
 const DarkBackground = styled.div`
   display: none; /* Hidden by default */
@@ -49,6 +48,15 @@ function App() {
     if (!response) return;
     setDataList(response.data);
   }
+
+  async function fetchByDate(date) {
+    const response = await axios.get(
+      `http://localhost:3000/kakao/daily/date?from=${date.from}&to=${date.to}`
+    );
+    if (!response) return;
+    setDataList(response.data);
+  }
+
   const handleReset = async () => {
     await axios.post("http://localhost:3000/kakao/daily/reset", {
       dataList: dataList,
@@ -100,9 +108,9 @@ function App() {
           <Col offset={1}>
             <UploadFile onUploaded={handleUploaded} />
           </Col>
-          {/*<Col offset={1}>
-            <RangePicker></RangePicker>
-  </Col>*/}
+          <Col offset={1}>
+            <DatePicker dateChanged={fetchByDate} />
+          </Col>
         </Row>
       </LoadingOverlay>
     </div>

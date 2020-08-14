@@ -31,10 +31,7 @@ function UploadFile({ onUploaded }) {
         <InboxOutlined />
       </p>
       <p className="ant-upload-text">클릭하거나 드래그하여 업로드</p>
-      {/*<p className="ant-upload-hint">
-        Support for a single or bulk upload. Strictly prohibit from uploading
-        company data or other band files
-  </p>*/}
+      <p className="ant-upload-hint">파일명을 날짜순으로 정리해주세요</p>
     </Dragger>
   );
 }

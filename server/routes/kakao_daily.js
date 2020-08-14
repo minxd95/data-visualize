@@ -186,6 +186,75 @@ router.post("/reset", (req, res) => {
       return res.json(err);
     }
   }
+
   res.json({ message: "success" });
+});
+router.get("/date", (req, res) => {
+  /* 파일 목록 불러와서 파일들의 데이터를 data 배열에 저장 */
+  fs.readdir("./data", (err, files) => {
+    const data = new Array(files.length);
+    let trackCodeList = new Array();
+    for (let i = 0; i < data.length; i++) {
+      data[i] = JSON.parse(fs.readFileSync("./data/" + files[i], "utf-8"));
+      for (let j = 0; j < data[i].length; j++) {
+        trackCodeList.push(data[i][j].trackCode);
+      }
+    }
+    // 중복 제거
+    trackCodeList = Array.from(new Set(trackCodeList));
+
+    // 합치기
+    let found = {};
+    const result = new Array(trackCodeList.length);
+    const resultTotal = new Array(trackCodeList.length);
+
+    for (let i = 0; i < trackCodeList.length; i++) {
+      result[i] = {};
+      result[i].daily = [];
+    }
+
+    // 중복되지 않는 리스트를 만들어 데이터 재가공
+    for (let k = 0; k < data.length; k++) {
+      for (let i = 0; i < trackCodeList.length; i++) {
+        found = data[k].find((e) => e.trackCode == trackCodeList[i]);
+        result[i] = {
+          trackName: found.trackName,
+          trackCode: found.trackCode,
+          albumName: found.albumName,
+          albumCode: found.albumCode,
+          artist: found.artist,
+          ...result[i],
+        };
+        result[i].daily.push(...found.daily);
+      }
+    }
+    for (let i = 0; i < result.length; i++) {
+      const tmp = [];
+      for (let j = 0; j < result[i].daily.length; j++) {
+        if (
+          new Date(result[i].daily[j].date) >= new Date(req.query.from) &&
+          new Date(result[i].daily[j].date) <= new Date(req.query.to)
+        ) {
+          tmp.push(result[i].daily[j]);
+        }
+      }
+      result[i].daily = tmp;
+      // 합 계산
+      let stTotal = 0,
+        dlTotal = 0,
+        royaltyTotal = 0;
+      for (let j = 0; j < result[i].daily.length; j++) {
+        stTotal += result[i].daily[j][`st_${result[i].daily[j].date}`] * 1;
+        dlTotal += result[i].daily[j][`dl_${result[i].daily[j].date}`] * 1;
+        royaltyTotal +=
+          result[i].daily[j][`royalty_${result[i].daily[j].date}`];
+      }
+      result[i].stTotal = stTotal;
+      result[i].dlTotal = dlTotal;
+      result[i].royaltyTotal = Math.round(royaltyTotal * 100) / 100;
+    }
+    res.json(result);
+  });
+  /*-------------------------------------------------------*/
 });
 export default router;
