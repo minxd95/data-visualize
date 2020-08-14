@@ -175,11 +175,11 @@ router.post("/reset", (req, res) => {
   for (let i = 0; i < req.body.dataList.length; i++) {
     try {
       fs.unlinkSync(
-        __dirname.replace("\\routes", "") + "\\data\\" + req.body.dataList[i]
+        __dirname.replace("/routes", "") + "/data/" + req.body.dataList[i]
       );
       fs.unlinkSync(
-        __dirname.replace("\\routes", "") +
-          "\\uploads\\" +
+        __dirname.replace("/routes", "") +
+          "/uploads/" +
           req.body.dataList[i].replace(/.json/gi, ".xlsx")
       );
     } catch (err) {
