@@ -52,11 +52,13 @@ function App() {
   }
 
   async function fetchByDate(date) {
+    setLoaded(false);
     const response = await axios.get(
       `http://ec2-13-209-89-146.ap-northeast-2.compute.amazonaws.com:3000/kakao/daily/date?from=${date.from}&to=${date.to}`
     );
     if (!response) return;
     setData(response.data);
+    setLoaded(true);
   }
 
   const handleReset = async () => {
