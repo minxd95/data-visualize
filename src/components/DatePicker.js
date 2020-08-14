@@ -26,6 +26,7 @@ function DatePicker(props) {
         <br />
         <button type="submit">반영</button>
       </form>
+      <button onClick={() => props.onReset()}>초기화</button>
     </div>
   );
 }

@@ -54,7 +54,7 @@ function App() {
       `http://localhost:3000/kakao/daily/date?from=${date.from}&to=${date.to}`
     );
     if (!response) return;
-    setDataList(response.data);
+    setData(response.data);
   }
 
   const handleReset = async () => {
@@ -109,7 +109,7 @@ function App() {
             <UploadFile onUploaded={handleUploaded} />
           </Col>
           <Col offset={1}>
-            <DatePicker dateChanged={fetchByDate} />
+            <DatePicker dateChanged={fetchByDate} onReset={handleUploaded} />
           </Col>
         </Row>
       </LoadingOverlay>
