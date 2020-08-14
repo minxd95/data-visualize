@@ -35,7 +35,9 @@ function App() {
 
   async function fetchData() {
     setLoaded(false);
-    const response = await axios.get("http://localhost:3000/kakao/daily/merge");
+    const response = await axios.get(
+      "http://ec2-13-209-89-146.ap-northeast-2.compute.amazonaws.com:3000/kakao/daily/merge"
+    );
     if (!response) return;
     setData(response.data);
     setLoaded(true);
@@ -43,7 +45,7 @@ function App() {
 
   async function fetchDataList() {
     const response = await axios.get(
-      "http://localhost:3000/kakao/daily/getlist"
+      "http://ec2-13-209-89-146.ap-northeast-2.compute.amazonaws.com:3000/kakao/daily/getlist"
     );
     if (!response) return;
     setDataList(response.data);
@@ -51,24 +53,30 @@ function App() {
 
   async function fetchByDate(date) {
     const response = await axios.get(
-      `http://localhost:3000/kakao/daily/date?from=${date.from}&to=${date.to}`
+      `http://ec2-13-209-89-146.ap-northeast-2.compute.amazonaws.com:3000/kakao/daily/date?from=${date.from}&to=${date.to}`
     );
     if (!response) return;
     setData(response.data);
   }
 
   const handleReset = async () => {
-    await axios.post("http://localhost:3000/kakao/daily/reset", {
-      dataList: dataList,
-    });
+    await axios.post(
+      "http://ec2-13-209-89-146.ap-northeast-2.compute.amazonaws.com:3000/kakao/daily/reset",
+      {
+        dataList: dataList,
+      }
+    );
     await fetchDataList();
     await fetchData();
   };
   const handleDelete = async (key, index) => {
     // 얕은 복사와 깊은 복사에 대해 공부하자
-    await axios.post("http://localhost:3000/kakao/daily/delete", {
-      file: dataList[key],
-    });
+    await axios.post(
+      "http://ec2-13-209-89-146.ap-northeast-2.compute.amazonaws.com:3000/kakao/daily/delete",
+      {
+        file: dataList[key],
+      }
+    );
     await fetchData();
     await setDataList(dataList.filter((d, inIndex) => inIndex !== index));
   };
