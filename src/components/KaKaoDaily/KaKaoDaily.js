@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import DataTable from "./components/DataTable";
-import DataList from "./components/DataList";
-import UploadFile from "./components/UploadFile";
-import DatePicker from "./components/DatePicker";
+import DataTable from "./DataTable";
+import DataList from "./DataList";
+import UploadFile from "./UploadFile";
+import DatePicker from "./DatePicker";
 import axios from "axios";
 import LoadingOverlay from "react-loading-overlay";
 import { Row, Col } from "antd";
@@ -28,16 +28,14 @@ const DarkBackground = styled.div`
     `}
 `;
 
-function App() {
+function KaKaoDaily() {
   const [loaded, setLoaded] = useState(true);
   const [data, setData] = useState([]);
   const [dataList, setDataList] = useState([]);
 
   async function fetchData() {
     setLoaded(false);
-    const response = await axios.get(
-      "http://ec2-13-209-89-146.ap-northeast-2.compute.amazonaws.com:3000/kakao/daily/merge"
-    );
+    const response = await axios.get("http://localhost:3000/kakao/daily/merge");
     if (!response) return;
     setData(response.data);
     setLoaded(true);
@@ -45,7 +43,7 @@ function App() {
 
   async function fetchDataList() {
     const response = await axios.get(
-      "http://ec2-13-209-89-146.ap-northeast-2.compute.amazonaws.com:3000/kakao/daily/getlist"
+      "http://localhost:3000/kakao/daily/getlist"
     );
     if (!response) return;
     setDataList(response.data);
@@ -54,7 +52,7 @@ function App() {
   async function fetchByDate(date) {
     setLoaded(false);
     const response = await axios.get(
-      `http://ec2-13-209-89-146.ap-northeast-2.compute.amazonaws.com:3000/kakao/daily/date?from=${date.from}&to=${date.to}`
+      `http://localhost:3000/kakao/daily/date?from=${date.from}&to=${date.to}`
     );
     if (!response) return;
     setData(response.data);
@@ -62,23 +60,17 @@ function App() {
   }
 
   const handleReset = async () => {
-    await axios.post(
-      "http://ec2-13-209-89-146.ap-northeast-2.compute.amazonaws.com:3000/kakao/daily/reset",
-      {
-        dataList: dataList,
-      }
-    );
+    await axios.post("http://localhost:3000/kakao/daily/reset", {
+      dataList: dataList,
+    });
     await fetchDataList();
     await fetchData();
   };
   const handleDelete = async (key, index) => {
     // 얕은 복사와 깊은 복사에 대해 공부하자
-    await axios.post(
-      "http://ec2-13-209-89-146.ap-northeast-2.compute.amazonaws.com:3000/kakao/daily/delete",
-      {
-        file: dataList[key],
-      }
-    );
+    await axios.post("http://localhost:3000/kakao/daily/delete", {
+      file: dataList[key],
+    });
     await fetchData();
     await setDataList(dataList.filter((d, inIndex) => inIndex !== index));
   };
@@ -127,4 +119,4 @@ function App() {
   );
 }
 
-export default App;
+export default KaKaoDaily;

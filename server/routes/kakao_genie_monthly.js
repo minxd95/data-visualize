@@ -11,7 +11,7 @@ router.use(express.urlencoded({ extended: false }));
 /* 업로드 모듈 설정 부분 */
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/kakao_daily/");
+    cb(null, "uploads/kakao_monthly/");
   },
   filename: (req, file, cb) => {
     cb(null, file.originalname);
@@ -23,7 +23,7 @@ const upload = multer({ storage: storage });
 router.use(express.urlencoded({ extended: false }));
 router.use(express.json());
 
-router.post("/upload", upload.array("file"), async (req, res) => {
+router.post("/upload/kakao", upload.array("file"), async (req, res) => {
   // 컬럼별 인덱스 저장 변수 선언
   for (let o = 0; o < req.files.length; o++) {
     let trackName = 0,
@@ -33,7 +33,7 @@ router.post("/upload", upload.array("file"), async (req, res) => {
       artist = 0,
       start = 0;
     const data = await parseXlsx(
-      "./uploads/kakao_daily/" + req.files[o].originalname
+      "./uploads/kakao_monthly/" + req.files[o].originalname
     );
     const resultJson = new Array(data.length - 2);
     /* 컬럼별 인덱스 저장 */
@@ -107,9 +107,7 @@ router.get("/merge", (req, res) => {
     const data = new Array(files.length);
     let trackCodeList = new Array();
     for (let i = 0; i < data.length; i++) {
-      data[i] = JSON.parse(
-        fs.readFileSync("./data/kakao_daily/" + files[i], "utf-8")
-      );
+      data[i] = JSON.parse(fs.readFileSync("./data/" + files[i], "utf-8"));
       for (let j = 0; j < data[i].length; j++) {
         trackCodeList.push(data[i][j].trackCode);
       }
@@ -160,71 +158,13 @@ router.get("/merge", (req, res) => {
   });
   /*-------------------------------------------------------*/
 });
-router.get("/merge/chart", (req, res) => {
-  // 차트용 데이터 반환 라우터
-  /* 파일 목록 불러와서 파일들의 데이터를 data 배열에 저장 */
-  fs.readdir("./data/kakao_daily", (err, files) => {
-    const data = new Array(files.length);
-    let trackCodeList = new Array();
-    for (let i = 0; i < data.length; i++) {
-      data[i] = JSON.parse(
-        fs.readFileSync("./data/kakao_daily/" + files[i], "utf-8")
-      );
-      for (let j = 0; j < data[i].length; j++) {
-        trackCodeList.push(data[i][j].trackCode);
-      }
-    }
-    // 중복 제거
-    trackCodeList = Array.from(new Set(trackCodeList));
-
-    // 합치기
-    let found = {};
-    const result = new Array(trackCodeList.length);
-    const resultTotal = new Array(trackCodeList.length);
-
-    for (let i = 0; i < trackCodeList.length; i++) {
-      result[i] = {};
-      result[i].daily = [];
-    }
-
-    // 중복되지 않는 리스트를 만들어 데이터 재가공
-    for (let k = 0; k < data.length; k++) {
-      for (let i = 0; i < trackCodeList.length; i++) {
-        found = data[k].find((e) => e.trackCode == trackCodeList[i]);
-        result[i] = {
-          trackName: found.trackName,
-          trackCode: found.trackCode,
-          albumName: found.albumName,
-          albumCode: found.albumCode,
-          artist: found.artist,
-          ...result[i],
-        };
-        result[i].daily.push(...found.daily);
-      }
-    }
-    for (let i = 0; i < result.length; i++) {
-      for (let j = 0; j < result[i].daily.length; j++) {
-        result[i].daily[j].stdl =
-          result[i].daily[j][`st_${result[i].daily[j].date}`] * 1 +
-          result[i].daily[j][`dl_${result[i].daily[j].date}`] * 1;
-        result[i].daily[j].royalty =
-          result[i].daily[j][`royalty_${result[i].daily[j].date}`];
-        delete result[i].daily[j][`st_${result[i].daily[j].date}`];
-        delete result[i].daily[j][`dl_${result[i].daily[j].date}`];
-        delete result[i].daily[j][`royalty_${result[i].daily[j].date}`];
-      }
-    }
-    res.json(result);
-  });
-  /*-------------------------------------------------------*/
-});
 router.get("/getlist", (req, res) => {
   fs.readdir("./data/kakao_daily", (err, files) => {
     res.json(files);
   });
 });
 router.post("/delete", (req, res) => {
-  fs.unlink("./data/kakao_daily/" + req.body.file, (err) => {
+  fs.unlink("./data/kakao_daily" + req.body.file, (err) => {
     if (err) return res.status(500).json(err);
     fs.unlink(
       "./uploads/kakao_daily/" + req.body.file.replace(/.json/gi, ".xlsx"),
@@ -239,17 +179,16 @@ router.post("/reset", (req, res) => {
   for (let i = 0; i < req.body.dataList.length; i++) {
     try {
       fs.unlinkSync(
-        __dirname.replace("\\routes", "") +
-          "\\data\\kakao_daily\\" +
-          req.body.dataList[i] // "\\" => "/"
+        __dirname.replace("/routes", "") +
+          "/data/kakao_daily/" +
+          req.body.dataList[i]
       );
       fs.unlinkSync(
-        __dirname.replace("\\routes", "") +
-        "\\uploads\\kakao_daily\\" + // "\\" => "/"
+        __dirname.replace("/routes", "") +
+          "/uploads/kakao_daily/" +
           req.body.dataList[i].replace(/.json/gi, ".xlsx")
       );
     } catch (err) {
-      console.log(err);
       return res.json(err);
     }
   }
