@@ -1,2 +1,2 @@
-export { default as KaKaoDailyRouter } from "./KaKaoDailyRouter";
+export { default as KaKaoDailyTableRouter } from "./KaKaoDailyTableRouter";
 export { default as KaKaoDailyChartRouter } from "./KaKaoDailyChartRouter";
