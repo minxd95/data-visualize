@@ -20,9 +20,6 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 /*-----------------------*/
 
-router.use(express.urlencoded({ extended: false }));
-router.use(express.json());
-
 router.post("/upload", upload.array("file"), async (req, res) => {
   // 컬럼별 인덱스 저장 변수 선언
   for (let o = 0; o < req.files.length; o++) {
@@ -214,9 +211,83 @@ router.get("/merge/chart", (req, res) => {
         delete result[i].daily[j][`royalty_${result[i].daily[j].date}`];
       }
     }
+    /*-------------------------------------------------------*/
     res.json(result);
   });
-  /*-------------------------------------------------------*/
+});
+router.get("/merge/chart/:from/:to", (req, res) => {
+  // 차트용 데이터 반환 라우터
+  /* 파일 목록 불러와서 파일들의 데이터를 data 배열에 저장 */
+  fs.readdir("./data/kakao_daily", (err, files) => {
+    const data = new Array(files.length);
+    let trackCodeList = new Array();
+    for (let i = 0; i < data.length; i++) {
+      data[i] = JSON.parse(
+        fs.readFileSync("./data/kakao_daily/" + files[i], "utf-8")
+      );
+      for (let j = 0; j < data[i].length; j++) {
+        trackCodeList.push(data[i][j].trackCode);
+      }
+    }
+    // 중복 제거
+    trackCodeList = Array.from(new Set(trackCodeList));
+
+    // 합치기
+    let found = {};
+    const result = new Array(trackCodeList.length);
+    const resultTotal = new Array(trackCodeList.length);
+
+    for (let i = 0; i < trackCodeList.length; i++) {
+      result[i] = {};
+      result[i].daily = [];
+    }
+
+    // 중복되지 않는 리스트를 만들어 데이터 재가공
+    for (let k = 0; k < data.length; k++) {
+      for (let i = 0; i < trackCodeList.length; i++) {
+        found = data[k].find((e) => e.trackCode == trackCodeList[i]);
+        result[i] = {
+          trackName: found.trackName,
+          trackCode: found.trackCode,
+          albumName: found.albumName,
+          albumCode: found.albumCode,
+          artist: found.artist,
+          ...result[i],
+        };
+        result[i].daily.push(...found.daily);
+      }
+    }
+    for (let i = 0; i < result.length; i++) {
+      for (let j = 0; j < result[i].daily.length; j++) {
+        result[i].daily[j].stdl =
+          result[i].daily[j][`st_${result[i].daily[j].date}`] * 1 +
+          result[i].daily[j][`dl_${result[i].daily[j].date}`] * 1;
+        result[i].daily[j].royalty =
+          result[i].daily[j][`royalty_${result[i].daily[j].date}`];
+        delete result[i].daily[j][`st_${result[i].daily[j].date}`];
+        delete result[i].daily[j][`dl_${result[i].daily[j].date}`];
+        delete result[i].daily[j][`royalty_${result[i].daily[j].date}`];
+      }
+    }
+    /*-------------------------------------------------------*/
+    /*-------------------날짜로 자르기-----------------------*/
+    if (req.params.from && req.params.to) {
+      for (let i = 0; i < result.length; i++) {
+        const tmp = [];
+        for (let j = 0; j < result[i].daily.length; j++) {
+          if (
+            new Date(result[i].daily[j].date) >= new Date(req.params.from) &&
+            new Date(result[i].daily[j].date) <= new Date(req.params.to)
+          ) {
+            tmp.push(result[i].daily[j]);
+          }
+        }
+        result[i].daily = tmp;
+      }
+    }
+    /*----------------------------------------------------*/
+    res.json(result);
+  });
 });
 router.get("/getlist", (req, res) => {
   fs.readdir("./data/kakao_daily", (err, files) => {
@@ -245,7 +316,7 @@ router.post("/reset", (req, res) => {
       );
       fs.unlinkSync(
         __dirname.replace("\\routes", "") +
-        "\\uploads\\kakao_daily\\" + // "\\" => "/"
+          "\\uploads\\kakao_daily\\" + // "\\" => "/"
           req.body.dataList[i].replace(/.json/gi, ".xlsx")
       );
     } catch (err) {
@@ -263,7 +334,7 @@ router.get("/date", (req, res) => {
     let trackCodeList = new Array();
     for (let i = 0; i < data.length; i++) {
       data[i] = JSON.parse(
-        fs.readFileSync("./data/kakao_daily" + files[i], "utf-8")
+        fs.readFileSync("./data/kakao_daily/" + files[i], "utf-8")
       );
       for (let j = 0; j < data[i].length; j++) {
         trackCodeList.push(data[i][j].trackCode);

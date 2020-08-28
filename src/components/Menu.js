@@ -11,7 +11,7 @@ const Menu = () => {
     <div>
       <ul>
         <li>
-          <NavLink exact to="/kakaodaily" activeStyle={activeStyle}>
+          <NavLink exact to="/kakaodaily/table" activeStyle={activeStyle}>
             KaKao Daily
           </NavLink>
         </li>

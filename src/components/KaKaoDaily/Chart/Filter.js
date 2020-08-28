@@ -16,7 +16,7 @@ function Filter({ data, filter, onFilterChange }) {
     </option>
   ));
   return (
-    <div className="container">
+    <div>
       <div className="filter">
         <span>트랙이름으로 필터링 : </span>
         <select

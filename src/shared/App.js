@@ -7,7 +7,7 @@ function App() {
   return (
     <div>
       <Menu />
-      <Route exact path="/kakaodaily/Table" component={KaKaoDailyTableRouter} />
+      <Route exact path="/kakaodaily/table" component={KaKaoDailyTableRouter} />
       <Route path="/kakaodaily/chart" component={KaKaoDailyChartRouter} />
     </div>
   );

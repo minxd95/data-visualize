@@ -16,7 +16,7 @@ function DatePicker(props) {
     props.dateChanged(date);
   }
   return (
-    <div>
+    <div className="filter">
       <form onSubmit={handleSubmit}>
         From :<br />
         <input
